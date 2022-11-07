@@ -373,7 +373,7 @@ class _MyAppState extends State<MyApp> {
                               value: _doRfid,
                               onChanged: onChangeRfid,
                               title: Text(
-                                  "Process rfid reading ${_canRfid ? "" : "(unavailable)"}")),
+                                  "Processes rfid reading ${_canRfid ? "" : "(unavailable)"}")),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
