@@ -34,10 +34,10 @@ class _MyAppState extends State<MyApp> {
   Color rfidUIHeaderColor = Colors.black;
   String rfidDescription = "Place your phone on top of the NFC tag";
   double rfidProgress = -1;
-  var _portrait = Image.asset('assets/images/portrait.png');
+  var _portrait = Image.asset('assets/images/id.png');
   var _docImage = Image.asset('assets/images/id.png');
   List<List<String>> _scenarios = [];
-  String _selectedScenario = "Mrz";
+  String _selectedScenario = "OCR";
   bool _canRfid = false;
   bool _doRfid = false;
   var printError =
@@ -188,13 +188,17 @@ class _MyAppState extends State<MyApp> {
     DocumentReader.setConfig({
       "functionality": {
         "videoCaptureMotionControl": true,
-        "showCaptureButton": true
+        "showCaptureButton": true,
       },
       "customization": {
         "showResultStatusMessages": true,
         "showStatusMessages": true
       },
-      "processParams": {"scenario": _selectedScenario}
+      "processParams": {
+        "scenario": _selectedScenario,
+        "multipageProcessing": true,
+        "checkHologram": true
+      }
     });
     DocumentReader.setRfidDelegate(RFIDDelegate.NO_PA);
     // addCertificates();
@@ -205,8 +209,9 @@ class _MyAppState extends State<MyApp> {
       _status = results.getTextFieldValueByType(
               EVisualFieldType.FT_SURNAME_AND_GIVEN_NAMES) ??
           "";
+
       _docImage = Image.asset('assets/images/id.png');
-      _portrait = Image.asset('assets/images/portrait.png');
+
       if (results.getGraphicFieldImageByType(207) != null)
         _docImage = Image.memory(Uri.parse("data:image/png;base64," +
                 results
@@ -215,20 +220,20 @@ class _MyAppState extends State<MyApp> {
                     .replaceAll('\n', ''))
             .data
             .contentAsBytes());
-      if (results.getGraphicFieldImageByType(201) != null)
+      _portrait = Image.asset('assets/images/id.png');
+      if (results.getGraphicFieldImageByType != null)
         _portrait = Image.memory(Uri.parse("data:image/png;base64," +
-                results
-                    .getGraphicFieldImageByType(EGraphicFieldType.GF_PORTRAIT)
-                    .replaceAll('\n', ''))
+                results.getGraphicFieldImageByType(
+                    EGraphicFieldType.GF_DOCUMENT_IMAGE))
             .data
             .contentAsBytes());
 
       for (var textField in results.textResult.fields) {
         for (var value in textField.values) {
           print(textField.fieldName +
-              ', value: ' +
+              ', values: ' +
               value.value +
-              ', source: ' +
+              ', sourcess: ' +
               value.sourceType.toString());
         }
       }
@@ -300,80 +305,87 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
           appBar: AppBar(title: Center(child: Text(_status))),
-          body: Column(mainAxisAlignment: MainAxisAlignment.center, children: <
-              Widget>[
-            Visibility(
-                visible: isReadingRfidCustomUi,
-                child: Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[]),
-                      Container(
-                          child: Text(rfidUIHeader,
-                              textScaleFactor: 1.75,
-                              style: TextStyle(color: rfidUIHeaderColor)),
-                          padding: EdgeInsets.only(bottom: 40)),
-                      Container(
-                          child: Text(rfidDescription, textScaleFactor: 1.4),
-                          padding: EdgeInsets.only(bottom: 40)),
-                      FractionallySizedBox(
-                          widthFactor: 0.6,
-                          child: LinearProgressIndicator(
-                              value: rfidProgress,
-                              minHeight: 10,
-                              valueColor: new AlwaysStoppedAnimation<Color>(
-                                  Color(0xFF4285F4)))),
-                      TextButton(
-                        onPressed: () => hideRfidUI(),
-                        child: Text("X"),
-                        style: TextButton.styleFrom(
-                            padding: EdgeInsets.only(top: 50)),
-                      ),
-                    ]))),
-            Visibility(
-                visible: !isReadingRfidCustomUi,
-                child: Expanded(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            createImage("Portrait", 150, 150, _portrait.image),
-                            createImage(
-                                "Document image", 150, 200, _docImage.image),
-                          ]),
-                      Expanded(
-                          child: Container(
-                              color: Color.fromARGB(5, 10, 10, 10),
-                              child: ListView.builder(
-                                  itemCount: _scenarios.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) =>
-                                          _buildRow(index)))),
-                      CheckboxListTile(
-                          value: _doRfid,
-                          onChanged: onChangeRfid,
-                          title: Text(
-                              "Process rfid reading ${_canRfid ? "" : "(unavailable)"}")),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            createButton("Scan document",
-                                () => DocumentReader.showScanner()),
-                            createButton(
-                                "Scan image",
-                                () async => DocumentReader.recognizeImages(
-                                    await getImages())),
-                          ])
-                    ]))),
-          ])),
+          body: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Visibility(
+                    visible: isReadingRfidCustomUi,
+                    child: Expanded(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[]),
+                          Container(
+                              child: Text(rfidUIHeader,
+                                  textScaleFactor: 1.75,
+                                  style: TextStyle(color: rfidUIHeaderColor)),
+                              padding: EdgeInsets.only(bottom: 40)),
+                          Container(
+                              child:
+                                  Text(rfidDescription, textScaleFactor: 1.4),
+                              padding: EdgeInsets.only(bottom: 40)),
+                          FractionallySizedBox(
+                              widthFactor: 0.6,
+                              child: LinearProgressIndicator(
+                                  value: rfidProgress,
+                                  minHeight: 10,
+                                  valueColor: new AlwaysStoppedAnimation<Color>(
+                                      Color(0xFF4285F4)))),
+                          TextButton(
+                            onPressed: () => hideRfidUI(),
+                            child: Text("X"),
+                            style: TextButton.styleFrom(
+                                padding: EdgeInsets.only(top: 50)),
+                          ),
+                        ]))),
+                Visibility(
+                    visible: !isReadingRfidCustomUi,
+                    child: Expanded(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                createImage(
+                                  "Document Front",
+                                  150,
+                                  200,
+                                  _docImage.image,
+                                ),
+                                createImage(
+                                    "Document Back", 150, 200, _portrait.image),
+                              ]),
+                          Expanded(
+                              child: Container(
+                                  color: Color.fromARGB(5, 10, 10, 10),
+                                  child: ListView.builder(
+                                      itemCount: _scenarios.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) =>
+                                              _buildRow(index)))),
+                          CheckboxListTile(
+                              value: _doRfid,
+                              onChanged: onChangeRfid,
+                              title: Text(
+                                  "Process rfid reading ${_canRfid ? "" : "(unavailable)"}")),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                createButton("Scan document",
+                                    () => DocumentReader.showScanner()),
+                                createButton(
+                                    "Scan image",
+                                    () async => DocumentReader.recognizeImages(
+                                        await getImages())),
+                              ])
+                        ]))),
+              ])),
     );
   }
 }
