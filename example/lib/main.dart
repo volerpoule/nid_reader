@@ -26,8 +26,20 @@ class _MyAppState extends State<MyApp> {
     return result;
   }
 
+  String statecode = 'a';
+  String idnumber = 'b';
+  String dob = 'c';
+  String surname = 'd';
+  String givenanme = 'e';
+  String issuestate = 'f';
+  String age = 'g';
+  String surnameatbirth = 'h';
+  String cardcontrolnumber = '';
+  String issuedate = '';
+
   Object setStatus(String s) => {setState(() => _status = s)};
   String _status = "Loading...";
+
   bool isReadingRfidCustomUi = false;
   bool isReadingRfid = false;
   String rfidUIHeader = "Reading RFID";
@@ -208,9 +220,32 @@ class _MyAppState extends State<MyApp> {
 
   displayResults(DocumentReaderResults results) {
     setState(() {
-      _status = results.getTextFieldValueByType(
-              EVisualFieldType.FT_SURNAME_AND_GIVEN_NAMES) ??
+      // _status = results.getTextFieldValueByType(EVisualFieldType.FT_) ?? "";
+      statecode = results.getTextFieldValueByType(
+              EVisualFieldType.FT_ISSUING_STATE_CODE) ??
           "";
+      idnumber = results
+              .getTextFieldValueByType(EVisualFieldType.FT_DOCUMENT_NUMBER) ??
+          "";
+      dob =
+          results.getTextFieldValueByType(EVisualFieldType.FT_DATE_OF_BIRTH) ??
+              "";
+      surname =
+          results.getTextFieldValueByType(EVisualFieldType.FT_SURNAME) ?? "";
+      givenanme =
+          results.getTextFieldValueByType(EVisualFieldType.FT_GIVEN_NAMES) ??
+              "";
+      issuestate = results.getTextFieldValueByType(
+              EVisualFieldType.FT_ISSUING_STATE_NAME) ??
+          "";
+      age = results.getTextFieldValueByType(EVisualFieldType.FT_AGE) ?? "";
+      surnameatbirth = results
+              .getTextFieldValueByType(EVisualFieldType.FT_SURNAME_AT_BIRTH) ??
+          "";
+
+      issuedate =
+          results.getTextFieldValueByType(EVisualFieldType.FT_DATE_OF_ISSUE) ??
+              "";
 
       _docImage = Image.asset('assets/images/id.png');
 
@@ -220,13 +255,13 @@ class _MyAppState extends State<MyApp> {
                     EGraphicFieldType.GF_DOCUMENT_IMAGE))
             .data
             .contentAsBytes());
-      // _portrait = Image.asset('assets/images/id.png');
-      // if (results.getGraphicFieldImageByType != null)
-      //   _portrait = Image.memory(Uri.parse("data:image/png;base64," +
-      //           results.getGraphicFieldImageByType(
-      //               EGraphicFieldType.GF_DOCUMENT_IMAGE))
-      //       .data
-      //       .contentAsBytes());
+      _portrait = Image.asset('assets/images/id.png');
+      if (results.getGraphicFieldImageByType(207) != null)
+        _portrait = Image.memory(Uri.parse("data:image/png;base64," +
+                results.getGraphicFieldImageByType(
+                    EGraphicFieldType.GF_DOCUMENT_IMAGE))
+            .data
+            .contentAsBytes());
 
       for (var textField in results.textResult.fields) {
         for (var value in textField.values) {
@@ -308,6 +343,15 @@ class _MyAppState extends State<MyApp> {
           body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                Text(statecode),
+                Text(idnumber),
+                Text(dob),
+                Text(surname),
+                Text(givenanme),
+                Text(issuestate),
+                Text(age),
+                Text(surnameatbirth),
+                Text(issuedate),
                 Visibility(
                     visible: isReadingRfidCustomUi,
                     child: Expanded(
