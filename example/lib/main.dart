@@ -189,6 +189,8 @@ class _MyAppState extends State<MyApp> {
       "functionality": {
         "videoCaptureMotionControl": true,
         "showCaptureButton": true,
+        "multipageProcessing": true,
+        "checkHologram": true
       },
       "customization": {
         "showResultStatusMessages": true,
@@ -214,19 +216,17 @@ class _MyAppState extends State<MyApp> {
 
       if (results.getGraphicFieldImageByType(207) != null)
         _docImage = Image.memory(Uri.parse("data:image/png;base64," +
-                results
-                    .getGraphicFieldImageByType(
-                        EGraphicFieldType.GF_DOCUMENT_IMAGE)
-                    .replaceAll('\n', ''))
-            .data
-            .contentAsBytes());
-      _portrait = Image.asset('assets/images/id.png');
-      if (results.getGraphicFieldImageByType != null)
-        _portrait = Image.memory(Uri.parse("data:image/png;base64," +
                 results.getGraphicFieldImageByType(
                     EGraphicFieldType.GF_DOCUMENT_IMAGE))
             .data
             .contentAsBytes());
+      // _portrait = Image.asset('assets/images/id.png');
+      // if (results.getGraphicFieldImageByType != null)
+      //   _portrait = Image.memory(Uri.parse("data:image/png;base64," +
+      //           results.getGraphicFieldImageByType(
+      //               EGraphicFieldType.GF_DOCUMENT_IMAGE))
+      //       .data
+      //       .contentAsBytes());
 
       for (var textField in results.textResult.fields) {
         for (var value in textField.values) {
