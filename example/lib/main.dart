@@ -242,9 +242,9 @@ class _MyAppState extends State<MyApp> {
       surnameatbirth =
           results.getTextFieldValueByType(EVisualFieldType.FT_SP_CODE) ?? "";
 
-      issuedate = results
-              .getTextFieldValueByType(EVisualFieldType.FT_DOCUMENT_SERIES) ??
-          "";
+      issuedate =
+          results.getTextFieldValueByType(EVisualFieldType.FT_BINARY_CODE) ??
+              "";
 
       _docImage = Image.asset('assets/images/id.png');
 
@@ -265,9 +265,9 @@ class _MyAppState extends State<MyApp> {
       for (var textField in results.textResult.fields) {
         for (var value in textField.values) {
           print(textField.fieldName +
-              ', values: ' +
+              ', value: ' +
               value.value +
-              ', sourcess: ' +
+              ', source: ' +
               value.sourceType.toString());
         }
       }
