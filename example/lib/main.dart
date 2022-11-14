@@ -242,8 +242,8 @@ class _MyAppState extends State<MyApp> {
       surnameatbirth =
           results.getTextFieldValueByType(EVisualFieldType.FT_SP_CODE) ?? "";
 
-      issuedate = results.getTextFieldValueByType(
-              DocumentReaderBarcodeResult().fields[0].barcodeType) ??
+      issuedate = results
+              .getTextFieldValueByType(EVisualFieldType.FT_DOCUMENT_SERIES) ??
           "";
 
       _docImage = Image.asset('assets/images/id.png');
