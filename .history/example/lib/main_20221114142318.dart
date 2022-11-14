@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   String cardcontrolnumber = '';
   String issuedate = '';
 
-  String frontImage = "";
+  int frontImage = 0;
 
   Object setStatus(String s) => {setState(() => _status = s)};
   String _status = "Loading...";

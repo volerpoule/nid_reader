@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   String cardcontrolnumber = '';
   String issuedate = '';
 
-  String frontImage = "";
+  int frontImage = 0;
 
   Object setStatus(String s) => {setState(() => _status = s)};
   String _status = "Loading...";
@@ -261,12 +261,11 @@ class _MyAppState extends State<MyApp> {
             .contentAsBytes());
       _portrait = Image.asset('assets/images/id.png');
       if (results.getGraphicFieldImageByType(207) != null)
-        // _portrait = Image.memory(Uri.parse("data:image/png;base64," +
-        //         results
-        //             .getGraphicFieldImageByType(EGraphicFieldType.GF_DOCUMENT_IMAGE))
-        //     .data
-        //     .contentAsBytes());
-        _portrait = Image.memory(base64Decode(results.graphicResult.fields[5].value));
+        _portrait = Image.memory(Uri.parse("data:image/png;base64," +
+                results
+                    .getGraphicFieldImageByType(EGraphicFieldType.GF_BAR_CODE))
+            .data
+            .contentAsBytes());
 
       for (var textField in results.textResult.fields) {
         for (var value in textField.values) {
