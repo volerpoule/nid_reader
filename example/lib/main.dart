@@ -239,13 +239,12 @@ class _MyAppState extends State<MyApp> {
               EVisualFieldType.FT_ISSUING_STATE_NAME) ??
           "";
       age = results.getTextFieldValueByType(EVisualFieldType.FT_AGE) ?? "";
-      surnameatbirth = results
-              .getTextFieldValueByType(EVisualFieldType.FT_SURNAME_AT_BIRTH) ??
-          "";
+      surnameatbirth =
+          results.getTextFieldValueByType(EVisualFieldType.FT_SP_CODE) ?? "";
 
-      issuedate =
-          results.getTextFieldValueByType(EVisualFieldType.FT_DATE_OF_ISSUE) ??
-              "";
+      issuedate = results.getTextFieldValueByType(
+              DocumentReaderBarcodeResult().fields[0].barcodeType) ??
+          "";
 
       _docImage = Image.asset('assets/images/id.png');
 
@@ -258,8 +257,8 @@ class _MyAppState extends State<MyApp> {
       _portrait = Image.asset('assets/images/id.png');
       if (results.getGraphicFieldImageByType(207) != null)
         _portrait = Image.memory(Uri.parse("data:image/png;base64," +
-                results.getGraphicFieldImageByType(
-                    EGraphicFieldType.GF_DOCUMENT_IMAGE))
+                results
+                    .getGraphicFieldImageByType(EGraphicFieldType.GF_BAR_CODE))
             .data
             .contentAsBytes());
 
